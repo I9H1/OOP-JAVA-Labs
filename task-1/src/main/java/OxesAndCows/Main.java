@@ -1,4 +1,5 @@
-import java.io.IOException;
+package oxesAndCows;
+
 import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -8,7 +9,7 @@ public class Main {
         // Number length reading
         System.out.print("Выберите длину последовательности (от 3 до 6): ");
         Scanner sc = new Scanner(System.in);
-        int size = 0;
+        int size;
         try {
             size = sc.nextInt();
         } catch (InputMismatchException e) {
@@ -42,10 +43,8 @@ public class Main {
             }
 
             Game game = new Game();
-
             int oxes = game.getOxesAmount(array, attemptNumbers);
             int cows = game.getCowsAndOxesAmount(array, attemptNumbers) - oxes;
-
             System.out.println("Быков: " + oxes + '\n' + "Коров: " + cows);
 
             if (oxes == size) {
