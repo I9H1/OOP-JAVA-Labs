@@ -1,61 +1,43 @@
 package oxesAndCows;
 
 import java.util.InputMismatchException;
-import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         // Number length reading
-        System.out.print("Выберите длину последовательности (от 3 до 6): ");
         Scanner sc = new Scanner(System.in);
+        System.out.print("Choose number length (from 3 to 6): ");
         int size;
         try {
             size = sc.nextInt();
         } catch (InputMismatchException e) {
-            System.out.print("Неверный ввод.");
+            System.out.print("Wrong input.");
             return;
         }
-        if (size > 6 || size < 3) {
-            System.out.print("Неверная длина.");
+        // Creating random number
+        Game game = new Game();
+        if (game.start(size) != Status.SUCCESS) {
+            System.out.println("Wrong size.");
             return;
         }
-        // Creating random number array
-        Utils utils = new Utils();
-        LinkedList<Integer> array = utils.generateArray(size);
-        System.out.println("Число загадано!");
-        utils.printArray(array);
-        // Game cycle
-        boolean gameOver = false;
-        byte attemptsLeft = (byte)(size * 3);
-        while (!gameOver) {
-            System.out.println("Осталось попыток: " + attemptsLeft);
-            System.out.print("Введите число: ");
-            String attempt = sc.next();
-            if (attempt.length() != size || !utils.isStringNumber(attempt)) {
-                System.out.println("Неверный ввод.");
+        // Game process
+        ResultContext result;
+        while (!game.isGameOver()) {
+            System.out.println("Attempts left: " + game.getAttemptsLeft());
+            System.out.print("Enter the number: ");
+            result = game.guess(sc.next());
+            if (result.status != Status.SUCCESS) {
+                System.out.println(result.errorMessage);
                 continue;
             }
-            LinkedList<Integer> attemptNumbers = utils.stringToNumbers(attempt);
-            if (!utils.areDigitsDifferent(attemptNumbers)) {
-                System.out.println("Цифры числа должны быть различны.");
-                continue;
+            System.out.println("Oxes: " + result.oxes + '\n' + "Cows: " + result.cows);
+            System.out.println();
+            if (game.isWin()) {
+                System.out.println("You won!");
             }
-
-            Game game = new Game();
-            int oxes = game.getOxesAmount(array, attemptNumbers);
-            int cows = game.getCowsAndOxesAmount(array, attemptNumbers) - oxes;
-            System.out.println("Быков: " + oxes + '\n' + "Коров: " + cows);
-
-            if (oxes == size) {
-                System.out.println("Вы победили!");
-                gameOver = true;
-            }
-            --attemptsLeft;
-            if (attemptsLeft == 0) {
-                System.out.print("Игра окончена. Было загадано число ");
-                utils.printArray(array);
-                gameOver = true;
+            if (game.isLoss()) {
+                System.out.println("Game over. The number was " + game.getNumber() + ".");
             }
         }
     }
