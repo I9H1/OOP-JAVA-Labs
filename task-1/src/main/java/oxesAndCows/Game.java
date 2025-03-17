@@ -8,10 +8,8 @@ import java.util.Random;
 public class Game {
 
     private int attemptsLeft = 0;
-    private boolean gameOver = false;
+    private GameState gameState = GameState.ON;
     private final ResultContext result = new ResultContext();
-    private boolean win = false;
-    private boolean lost = false;
     private String number;
 
     public Status start(int size) {
@@ -30,11 +28,9 @@ public class Game {
             result.oxes = getOxes(guess);
             --attemptsLeft;
             if (result.oxes == number.length()) {
-                gameOver = true;
-                win = true;
+                gameState = GameState.WIN;
             } else if (attemptsLeft == 0) {
-                gameOver = true;
-                lost = true;
+                gameState = GameState.LOST;
             }
         }
         result.errorMessage = getMessage(result.status);
@@ -109,15 +105,15 @@ public class Game {
     }
 
     public boolean isGameOver() {
-        return gameOver;
+        return gameState != GameState.ON;
     }
 
     public boolean isWin() {
-        return win;
+        return gameState == GameState.WIN;
     }
 
     public boolean isLoss() {
-        return lost;
+        return gameState == GameState.LOST;
     }
 
     public void setNumber(String number) {
