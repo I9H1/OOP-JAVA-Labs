@@ -1,5 +1,8 @@
 package main;
 
+import commands.Command;
+import commands.CommandFactory;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,34 +15,39 @@ public class Main {
         ExecContext context = new ExecContext();
         context.stack = new Stack<>();
         context.vars = new HashMap<>();
+        CommandFactory commandFactory = new CommandFactory();
 
-        // Creating reading stream
-        BufferedReader reader;
-        if (args.length > 0) {
-            try (FileReader fileReader = new FileReader(args[0])) {
+        BufferedReader reader = null;
+        try {
+            if (args.length > 0) {
+                FileReader fileReader = new FileReader(args[0]);
                 reader = new BufferedReader(fileReader);
-            } catch (IOException e) {
-                System.out.println("Error while opening file: " + e.getMessage());
+            } else {
                 reader = new BufferedReader(new InputStreamReader(System.in));
             }
-        } else {
-            reader = new BufferedReader(new InputStreamReader(System.in));
-        }
-
-        String line;
-        try {
+            String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
+                String name = line.split(" ")[0];
+                String arguments = line.split(" ")[1];
+                Command command = commandFactory.createCommand(name);
             }
+
         } catch (IOException e) {
-            System.out.println("Error while reading line: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         } finally {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                System.out.println("Error while closing file: " + e.getMessage());
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    System.out.println("Error while closing resource: " + e.getMessage());
+                }
             }
         }
-
     }
+
+    public void parse(String[] arguments, String name) {
+        
+    }
+
 }

@@ -4,7 +4,7 @@ import main.ExecContext;
 
 public class Add extends Command {
     @Override
-    public void execute(ExecContext context) {
+    public void execute(ExecContext context, String[] args) {
         if (context.stack.size() >= 2) {
             double b = context.stack.pop();
             double a = context.stack.pop();
