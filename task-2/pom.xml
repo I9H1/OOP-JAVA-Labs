@@ -23,13 +23,35 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>main.Main</Main-Class>
+                            <Main-Class>main.Calculator</Main-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/main</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/java/main</directory>
+                                    <includes>
+                                        <include>command_config.properties</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
-
-
 </project>
