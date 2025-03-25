@@ -5,16 +5,18 @@ import exceptions.WrongArgumentsAmount;
 import exceptions.WrongArgumentException;
 import main.ExecContext;
 
+import java.util.LinkedList;
+
 public class Define extends Command {
     @Override
-    public void execute(ExecContext context, String[] args) throws CalculatorException {
-        if (args.length != 2) {
-            throw new WrongArgumentsAmount(getName(), 2, args.length);
+    public void execute(ExecContext context, LinkedList<String> args) throws CalculatorException {
+        if (args.size() != 2) {
+            throw new WrongArgumentsAmount(getName(), 2, args.size());
         }
         try {
-            context.vars.put(args[0], Double.parseDouble(args[1]));
+            context.addVar(args.get(0), Double.parseDouble(args.get(1)));
         } catch (NumberFormatException e) {
-            throw new WrongArgumentException(getName(), args[1]);
+            throw new WrongArgumentException(getName(), args.get(1));
         }
     }
 

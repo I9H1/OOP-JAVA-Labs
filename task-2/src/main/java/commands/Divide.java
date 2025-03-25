@@ -3,22 +3,24 @@ package commands;
 import exceptions.*;
 import main.ExecContext;
 
+import java.util.LinkedList;
+
 public class Divide extends Command {
     @Override
-    public void execute(ExecContext context, String[] args) throws CalculatorException {
-        if (args.length != 0) {
-            throw new WrongArgumentsAmount(getName(), 0, args.length);
+    public void execute(ExecContext context, LinkedList<String> args) throws CalculatorException {
+        if (!args.isEmpty()) {
+            throw new WrongArgumentsAmount(getName(), 0, args.size());
         }
-        if (context.stack.size() >= 2) {
-            double b = context.stack.pop();
+        if (context.getStackSize() >= 2) {
+            double b = context.pop();
             if (b == 0) {
-                context.stack.push(b);
+                context.push(b);
                 throw new ZeroDivisionException();
             }
-            double a = context.stack.pop();
-            context.stack.push(a / b);
+            double a = context.pop();
+            context.push(a / b);
         } else {
-            throw new StackErrorException(getName(), 2, context.stack.size());
+            throw new StackErrorException(getName(), 2, context.getStackSize());
         }
     }
 

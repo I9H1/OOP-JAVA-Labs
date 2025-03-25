@@ -1,14 +1,16 @@
 package main;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+
 public class Parser {
-    public String getName(String line) {
-        return line.split(" ")[0];
+    public CommandContext parse(String line) {
+        CommandContext context = new CommandContext();
+        context.setName(line.split(" ")[0]);
+        String[] tokens = line.split(" ");
+        LinkedList<String> arguments = new LinkedList<>(Arrays.asList(tokens).subList(1, tokens.length));
+        context.setArgs(arguments);
+        return context;
     }
 
-    public String[] getArguments(String line) {
-        String[] tokens = line.split(" ");
-        String[] arguments = new String[tokens.length - 1];
-        System.arraycopy(tokens, 1, arguments, 0, tokens.length - 1);
-        return arguments;
-    }
 }

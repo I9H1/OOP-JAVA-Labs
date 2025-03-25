@@ -1,8 +1,5 @@
-мар. 23, 2025 12:49:38 AM main.Calculator main
-INFO: PUSH 1
-мар. 23, 2025 12:49:38 AM main.Calculator main
-INFO: PUSH 2
-мар. 23, 2025 12:49:38 AM main.Calculator main
-INFO: +
-мар. 23, 2025 12:49:38 AM main.Calculator main
-INFO: PRINT
+21:17:02.809 [main] INFO  main.Calculator - Starting execution
+21:17:02.811 [main] INFO  main.Calculator - PUSH 1
+21:17:02.812 [main] INFO  main.Calculator - PUSH 2
+21:17:02.812 [main] INFO  main.Calculator - +
+21:17:02.813 [main] INFO  main.Calculator - PRINT

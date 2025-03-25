@@ -5,20 +5,22 @@ import exceptions.WrongArgumentsAmount;
 import exceptions.WrongArgumentException;
 import main.ExecContext;
 
+import java.util.LinkedList;
+
 public class Push extends Command {
     @Override
-    public void execute(ExecContext context, String[] args) throws CalculatorException {
-        if (args.length != 1) {
-            throw new WrongArgumentsAmount(getName(), 1, args.length);
+    public void execute(ExecContext context, LinkedList<String> args) throws CalculatorException {
+        if (args.size() != 1) {
+            throw new WrongArgumentsAmount(getName(), 1, args.size());
         }
         try {
-            if (context.vars.containsKey(args[0])) {
-                context.stack.push(context.vars.get(args[0]));
+            if (context.containsVar(args.get(0))) {
+                context.push(context.getVar(args.get(0)));
             } else {
-                context.stack.push(Double.parseDouble(args[0]));
+                context.push(Double.parseDouble(args.get(0)));
             }
         } catch (NumberFormatException e) {
-            throw new WrongArgumentException(getName(), args[0]);
+            throw new WrongArgumentException(getName(), args.get(0));
         }
     }
 

@@ -5,18 +5,20 @@ import exceptions.StackErrorException;
 import exceptions.WrongArgumentsAmount;
 import main.ExecContext;
 
+import java.util.LinkedList;
+
 public class Multiply extends Command {
     @Override
-    public void execute(ExecContext context, String[] args) throws CalculatorException {
-        if (args.length != 0) {
-            throw new WrongArgumentsAmount(getName(), 0, args.length);
+    public void execute(ExecContext context, LinkedList<String> args) throws CalculatorException {
+        if (!args.isEmpty()) {
+            throw new WrongArgumentsAmount(getName(), 0, args.size());
         }
-        if (context.stack.size() >= 2) {
-            double b = context.stack.pop();
-            double a = context.stack.pop();
-            context.stack.push(a * b);
+        if (context.getStackSize() >= 2) {
+            double b = context.pop();
+            double a = context.pop();
+            context.push(a * b);
         } else {
-            throw new StackErrorException(getName(), 2, context.stack.size());
+            throw new StackErrorException(getName(), 2, context.getStackSize());
         }
     }
 

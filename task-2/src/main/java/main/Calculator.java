@@ -4,33 +4,24 @@ import commands.Command;
 import exceptions.CalculatorException;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import java.util.LinkedList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Calculator {
     public static void main(String[] args) {
         // Initiating resources
-        Logger logger = Logger.getLogger(Calculator.class.getName());
-        try {
-            LogManager.getLogManager().readConfiguration
-                    (Calculator.class.getResourceAsStream("/logging.properties"));
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            return;
-        }
+        Logger logger = LoggerFactory.getLogger(Calculator.class);
+        logger.info("Starting execution");
         Parser parser = new Parser();
         ExecContext context = new ExecContext();
-        context.stack = new Stack<>();
-        context.vars = new HashMap<>();
         CommandFactory commandFactory;
         try {
             commandFactory = new CommandFactory();
         } catch (CalculatorException e) {
             System.out.println(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
             return;
         }
 
@@ -42,7 +33,7 @@ public class Calculator {
                 reader = new BufferedReader(fileReader);
             } catch (FileNotFoundException e) {
                 System.out.println(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage());
+                logger.error(e.getMessage());
                 reader = new BufferedReader(new InputStreamReader(System.in));
             }
         } else {
@@ -53,20 +44,21 @@ public class Calculator {
         String line;
         try {
             while ((line = reader.readLine()) != null) {
-                logger.log(Level.INFO, line);
-                String name = parser.getName(line);
-                String[] arguments = parser.getArguments(line);
+                logger.info(line);
+                CommandContext commandContext = parser.parse(line);
+                String name = commandContext.getName();
+                LinkedList<String> arguments = commandContext.getArgs();
                 try {
                     Command command = commandFactory.createCommand(name);
                     command.execute(context, arguments);
                 } catch (CalculatorException e) {
                     System.out.println(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage());
+                    logger.error(e.getMessage());
                 }
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
         }
 
         // Closing input stream
@@ -74,7 +66,7 @@ public class Calculator {
             reader.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 }

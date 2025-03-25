@@ -9,16 +9,18 @@ class ParserTest {
     void getNameTest() {
         Parser parser = new Parser();
         String line = "Name arg1 arg2 arg3";
-        assertEquals("Name", parser.getName(line));
+        CommandContext context = parser.parse(line);
+        assertEquals("Name", context.getName());
     }
 
     @Test
     void getArgsTest() {
         Parser parser = new Parser();
         String line = "Name arg1 arg2 arg3";
-        assertEquals("arg1", parser.getArguments(line)[0]);
-        assertEquals("arg2", parser.getArguments(line)[1]);
-        assertEquals("arg3", parser.getArguments(line)[2]);
-        assertEquals(3, parser.getArguments(line).length);
+        CommandContext context = parser.parse(line);
+        assertEquals("arg1", context.getArgs().get(0));
+        assertEquals("arg2", context.getArgs().get(1));
+        assertEquals("arg3", context.getArgs().get(2));
+        assertEquals(3, context.getArgs().size());
     }
 }
