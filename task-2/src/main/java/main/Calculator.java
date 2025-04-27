@@ -46,8 +46,8 @@ public class Calculator {
             while ((line = reader.readLine()) != null) {
                 logger.info(line);
                 CommandContext commandContext = parser.parse(line);
-                String name = commandContext.getName();
-                LinkedList<String> arguments = commandContext.getArgs();
+                String name = commandContext.name();
+                LinkedList<String> arguments = commandContext.args();
                 try {
                     Command command = commandFactory.createCommand(name);
                     command.execute(context, arguments);
