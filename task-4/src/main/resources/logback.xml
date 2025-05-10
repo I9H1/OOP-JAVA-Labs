@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="false">
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/fabric.log</file> <!-- Текущий файл лога -->
+        <!-- Политика ротации по времени и размеру -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Имя архивированных логов (по дате) -->
+            <fileNamePattern>logs/fabric.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- Храним логи 10 дней -->
+            <maxHistory>10</maxHistory>
+            <!-- Максимальный размер файла до ротации -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>1GB</maxFileSize> <!-- Ротация при достижении 1 ГБ -->
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- Общий максимальный размер всех логов (10 ГБ) -->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+
+        <!-- Формат логов -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Уровень логирования -->
+    <root level="INFO">
+        <appender-ref ref="FILE" />
+    </root>
+
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+</configuration>

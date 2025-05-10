@@ -1,40 +1,35 @@
 package ru.nsu.ccfit.burlakov.threadpool;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.ArrayDeque;
 
 public class PooledThread extends Thread {
-    private final LinkedBlockingQueue<ThreadPoolTask> taskQueue;
+    private final ArrayDeque<Task> taskQueue;
 
-    public PooledThread(String name, LinkedBlockingQueue<ThreadPoolTask> taskQueue){
+    public PooledThread(String name, ArrayDeque<Task> taskQueue) {
         super(name);
         this.taskQueue = taskQueue;
     }
 
-    private void performTask(ThreadPoolTask t) {
-        t.prepare();
-        try {
-            t.go();
-            t.finish();
-        } catch (InterruptedException e){
-            t.interrupted();
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    public void run(){
-        while (true) {
+    @Override
+    public void run() {
+        while (!isInterrupted()) {
+            Task task;
+            synchronized (taskQueue) {
+                while (taskQueue.isEmpty()) {
+                    try {
+                        taskQueue.wait();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }
+                task = taskQueue.removeFirst();
+            }
             try {
-                ThreadPoolTask toExecute = taskQueue.take();
-                performTask(toExecute);
+                task.performWork();
             } catch (InterruptedException e) {
-                // Logger
                 Thread.currentThread().interrupt();
-                break;
             }
         }
-    }
-
-    public void stopRunning() {
-        interrupt();
     }
 }

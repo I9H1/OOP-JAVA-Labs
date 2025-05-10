@@ -1,4 +1,4 @@
 package ru.nsu.ccfit.burlakov.factory.details;
 
-public class Engine {
+public class Engine extends Detail {
 }

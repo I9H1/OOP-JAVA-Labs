@@ -1,56 +1,34 @@
 package ru.nsu.ccfit.burlakov.threadpool;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.ArrayDeque;
 
-public class ThreadPool implements TaskListener {
-    private final LinkedBlockingQueue<ThreadPoolTask> taskQueue = new LinkedBlockingQueue<>();
-    private final Set<PooledThread> readyThreads = new HashSet<>();
+public class ThreadPool {
+    private final ArrayDeque<Task> taskQueue = new ArrayDeque<>();
+    private final ArrayDeque<PooledThread> threads = new ArrayDeque<>();
 
-    public ThreadPool(int threadAmount){
-        for (int i = 0; i < threadAmount; ++i){
-            readyThreads.add(new PooledThread("Thread_" + i, taskQueue));
-        }
-        for (PooledThread thread : readyThreads){
+    public ThreadPool(int threadCount) {
+        for (int i = 0; i < threadCount; i++) {
+            PooledThread thread = new PooledThread("PoolThread-" + i, taskQueue);
+            threads.add(thread);
             thread.start();
         }
     }
 
-    @Override
-    public void taskInterrupted(Task t) {
-
-    }
-
-    @Override
-    public void taskFinished(Task t) {
-
-    }
-
-    @Override
-    public void taskStarted(Task t) {
-
-    }
-
-    public void addTask(Task t) {
-        addTask(t, this);
-    }
-
-    public void addTask(Task t, TaskListener l) {
-        taskQueue.offer(new ThreadPoolTask(t, l));
+    public void addTask(Task task) {
+        synchronized (taskQueue) {
+            taskQueue.add(task);
+            taskQueue.notifyAll();
+        }
     }
 
     public void shutdown() {
-        for (PooledThread thread : readyThreads) {
-            thread.stopRunning();
-        }
-        for (PooledThread thread: readyThreads){
+        threads.forEach(Thread::interrupt);
+        threads.forEach(thread -> {
             try {
                 thread.join();
-                //logger (?)
-            } catch (InterruptedException e){
-                //logger
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-        }
+        });
     }
 }

@@ -1,4 +1,4 @@
 package ru.nsu.ccfit.burlakov.factory.details;
 
-public class Body {
+public class Body extends Detail {
 }

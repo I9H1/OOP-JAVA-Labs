@@ -2,10 +2,12 @@ package ru.nsu.ccfit.burlakov.factory;
 
 import java.util.ArrayDeque;
 
+
 public class Storage<T> {
-    private ArrayDeque<T> storage;
+    private final ArrayDeque<T> storage;
     private final int size;
     private final String name;
+    private final Object monitor = new Object();
 
     public Storage(int size, String name) {
         this.size = size;
@@ -14,24 +16,37 @@ public class Storage<T> {
     }
 
     public int getItemsAmount() {
-        return storage.size();
-    }
-
-    public synchronized void put(T item) throws InterruptedException {
-        if (getItemsAmount() >= size) {
-            wait();
+        synchronized (monitor) {
+            return storage.size();
         }
-        storage.add(item);
-        notifyAll();
     }
 
-    public synchronized T get() throws InterruptedException {
-        if (getItemsAmount() <= 0) {
-            wait();
+    public int getCapacity() {
+        return size;
+    }
+
+    public void put(T item) throws InterruptedException {
+        synchronized (monitor) {
+            while (storage.size() >= size) {
+                monitor.wait();
+            }
+            storage.add(item);
+            monitor.notifyAll();
         }
-        T item = storage.removeFirst();
-        notifyAll();
-        return item;
     }
 
+    public T get() throws InterruptedException {
+        synchronized (monitor) {
+            while (storage.isEmpty()) {
+                monitor.wait();
+            }
+            T item = storage.removeFirst();
+            monitor.notifyAll();
+            return item;
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
 }
