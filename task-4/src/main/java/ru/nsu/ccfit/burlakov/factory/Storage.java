@@ -2,7 +2,6 @@ package ru.nsu.ccfit.burlakov.factory;
 
 import java.util.ArrayDeque;
 
-
 public class Storage<T> {
     private final ArrayDeque<T> storage;
     private final int size;
