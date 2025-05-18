@@ -49,18 +49,16 @@ public class CarFactory {
         engineStorage = new Storage<>(data.engineStorageSize(), "EngineStorage");
         bodyStorage = new Storage<>(data.bodyStorageSize(), "BodyStorage");
         accessoryStorage = new Storage<>(data.accessoryStorageSize(), "AccessoryStorage");
-        carStorage = new Storage<>(data.carStorageSize(), "CarStorage");
         workersThreadPool = new ThreadPool(data.workersAmount());
+        controller = new StorageController(this, workersThreadPool, data.carStorageSize());
+        carStorage = new Storage<>(data.carStorageSize(), "CarStorage");
+        carStorage.setListener(controller);
         engineSupplier = new Supplier<>(engineStorage, Engine.class, data.supplierWorkTime());
         bodySupplier = new Supplier<>(bodyStorage, Body.class, data.supplierWorkTime());
-        controller = new StorageController(this, carStorage, workersThreadPool);
     }
 
     public void start() {
         logger.info("--- FABRIC STARTED WORKING ---");
-        Thread controllerThread = new Thread(controller);
-        threads.add(controllerThread);
-        controllerThread.start();
 
         for (int i = 0; i < data.suppliersAmount(); ++i) {
             Supplier<Accessory> supplier = new Supplier<>(accessoryStorage, Accessory.class, data.supplierWorkTime());
@@ -93,7 +91,7 @@ public class CarFactory {
         logger.info("--- FABRIC STOPPED WORKING ---");
     }
 
-    public void incrementTotalCars() {
+    public synchronized void incrementTotalCars() {
         ++totalCarsCreated;
     }
 

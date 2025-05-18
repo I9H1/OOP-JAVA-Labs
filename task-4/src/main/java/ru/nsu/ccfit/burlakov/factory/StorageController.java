@@ -4,36 +4,19 @@ import ru.nsu.ccfit.burlakov.factory.tasks.WorkerTask;
 import ru.nsu.ccfit.burlakov.threadpool.ThreadPool;
 
 public class StorageController implements Listener {
-    private final Storage<Car> storage;
     private final ThreadPool threadpool;
     private final CarFactory factory;
 
-    public StorageController(CarFactory factory, Storage<Car> storage, ThreadPool threadpool) {
+    public StorageController(CarFactory factory, ThreadPool threadpool, int initialTasks) {
         this.factory = factory;
-        this.storage = storage;
         this.threadpool = threadpool;
-    }
-
-    public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            try {
-                synchronized (storage) {
-                    while (storage.getItemsAmount() == storage.getCapacity()) {
-                        System.out.println("Storage is full");
-                        storage.wait();
-                    }
-                    threadpool.addTask(new WorkerTask(factory));
-                }
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
+        for (int i = 0; i < initialTasks; ++i) {
+            threadpool.addTask(new WorkerTask(factory));
         }
     }
 
     @Override
     public void update() {
-
+        threadpool.addTask(new WorkerTask(factory));
     }
 }

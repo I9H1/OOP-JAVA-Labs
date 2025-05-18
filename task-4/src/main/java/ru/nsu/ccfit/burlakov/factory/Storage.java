@@ -7,10 +7,12 @@ public class Storage<T> {
     private final int size;
     private final String name;
     private final Object monitor = new Object();
+    private Listener listener;
 
     public Storage(int size, String name) {
         this.size = size;
         this.name = name;
+        this.listener = null;
         this.storage = new ArrayDeque<>(size);
     }
 
@@ -18,10 +20,6 @@ public class Storage<T> {
         synchronized (monitor) {
             return storage.size();
         }
-    }
-
-    public int getCapacity() {
-        return size;
     }
 
     public void put(T item) throws InterruptedException {
@@ -40,6 +38,9 @@ public class Storage<T> {
                 monitor.wait();
             }
             T item = storage.removeFirst();
+            if (listener != null) {
+                listener.update();
+            }
             monitor.notifyAll();
             return item;
         }
@@ -47,5 +48,13 @@ public class Storage<T> {
 
     public String getName() {
         return name;
+    }
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
+    public int getCapacity() {
+        return size;
     }
 }
